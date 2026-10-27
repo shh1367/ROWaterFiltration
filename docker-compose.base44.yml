@@ -1,0 +1,28 @@
+services:
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command:
+      - sh
+      - -ec
+      - npm install --no-audit --no-fund && exec npm run dev -- --host 0.0.0.0 --port 3000 --strictPort
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+    environment:
+      - BASE44_PREVIEW_MODE
+      - BASE44_SANDBOX_HOST_DOMAIN
+      - BASE44_PUBLIC_HOST_SUFFIX
+      - __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS
+    labels:
+      base44.project: "RO Water Filtration"
+      base44.kind: web
+      base44.port: "3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 120s
+    restart: on-failure
